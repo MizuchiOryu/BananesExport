@@ -1,10 +1,9 @@
 package demo.bananeexport.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
-public class Order {
+public class Recipient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -49,15 +48,12 @@ public class Order {
     )
     @Column(name = "country",nullable = false,length = 30)
     private String country;
-    public Order(String name, String address, String postal_code,String city,String country) {
+    public Recipient(String name, String address, String postal_code, String city, String country) {
         this.name = name;
         this.address = address;
         this.postal_code = postal_code;
         this.city = city;
         this.country = country;
-    }
-    public Order(){
-        super();
     }
 
     public String getName() {
@@ -113,9 +109,9 @@ public class Order {
 
         if (this == o)
             return true;
-        if (!(o instanceof Order))
+        if (!(o instanceof Recipient))
             return false;
-        Order employee = (Order) o;
+        Recipient employee = (Recipient) o;
         return name.equals(employee.name) &&
                 address.equals(employee.address) &&
                 postal_code.equals(employee.postal_code) &&

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import demo.bananeexport.exceptions.ApiCustomException;
+import demo.bananeexport.repository.RecipientRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -20,39 +21,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import demo.bananeexport.model.Order;
-import demo.bananeexport.repository.OrderRepository;
+import demo.bananeexport.model.Recipient;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact;
 
 
 @RestController
 @RequestMapping("/api/")
-class OrderController{
+class RecipientController {
 
     @Autowired
-    OrderRepository orderRepository;
+    RecipientRepository recipientRepository;
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<Order>> getAllOrders() {
+    @GetMapping("/recipients")
+    public ResponseEntity<List<Recipient>> getAllRecipient() {
         try {
-            List<Order> orders = new ArrayList<Order>();
-            orderRepository.findAll().forEach(orders::add);
+            List<Recipient> recipients = new ArrayList<Recipient>();
+            recipientRepository.findAll().forEach(recipients::add);
             /*
             Si on veut gerer le HTTP CODE 204
             if (orders.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
              */
-            return new ResponseEntity<>(orders, HttpStatus.OK);
+            return new ResponseEntity<>(recipients, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/orders/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") long id) {
-        Optional<Order> orderData = orderRepository.findById(id);
+    @GetMapping("/recipients/{id}")
+    public ResponseEntity<Recipient> getRecipientById(@PathVariable("id") long id) {
+        Optional<Recipient> orderData = recipientRepository.findById(id);
         if (orderData.isPresent()) {
             return new ResponseEntity<>(orderData.get(), HttpStatus.OK);
         } else {
@@ -60,8 +60,8 @@ class OrderController{
         }
     }
 
-    @PostMapping("/orders")
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) throws ApiCustomException{
+    @PostMapping("/recipients")
+    public ResponseEntity<Recipient> createRecipient(@Valid @RequestBody Recipient recipient) throws ApiCustomException{
         ExampleMatcher modelMatcher = ExampleMatcher.matching()
                 .withIgnorePaths("id")
                 .withMatcher("name", exact())
@@ -70,31 +70,31 @@ class OrderController{
                 .withMatcher("city",exact())
                 .withMatcher("country",exact())
         ;
-        Example<Order> example = Example.of(order, modelMatcher);
-        boolean exists = orderRepository.exists(example);
+        Example<Recipient> example = Example.of(recipient, modelMatcher);
+        boolean exists = recipientRepository.exists(example);
         if(exists){
             throw  new ApiCustomException("User exist");
         }
-        System.out.println(order);
-        Order _order = orderRepository.save(order);
-        return new ResponseEntity<>(_order, HttpStatus.CREATED);
+        System.out.println(recipient);
+        Recipient _recipient = recipientRepository.save(recipient);
+        return new ResponseEntity<>(_recipient, HttpStatus.CREATED);
     }
 
-    @PutMapping("/orders/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") long id, @Valid @RequestBody Order order) {
-        Optional<Order> orderData = orderRepository.findById(id);
+    @PutMapping("/recipients/{id}")
+    public ResponseEntity<Recipient> updateRecipient(@PathVariable("id") long id, @Valid @RequestBody Recipient recipient) {
+        Optional<Recipient> orderData = recipientRepository.findById(id);
         if (orderData.isPresent()) {
 
-            Order _order = orderData.get();
-            _order.setName(order.getName());
-            _order.setAddress(order.getAddress());
-            _order.setPostal_code(order.getPostal_code());
-            _order.setCity(order.getCity());
-            _order.setCountry(order.getCountry());
-            return new ResponseEntity<>(orderRepository.save(_order), HttpStatus.OK);
+            Recipient _recipient = orderData.get();
+            _recipient.setName(recipient.getName());
+            _recipient.setAddress(recipient.getAddress());
+            _recipient.setPostal_code(recipient.getPostal_code());
+            _recipient.setCity(recipient.getCity());
+            _recipient.setCountry(recipient.getCountry());
+            return new ResponseEntity<>(recipientRepository.save(_recipient), HttpStatus.OK);
         } else {
-            order.setId(id);
-            return new ResponseEntity<>(orderRepository.save(order), HttpStatus.OK);
+            recipient.setId(id);
+            return new ResponseEntity<>(recipientRepository.save(recipient), HttpStatus.OK);
         }
     }
 
@@ -102,12 +102,12 @@ class OrderController{
         PATCH NON IMPLEMENTE DEPENDANCE JSON Patch Format
      */
 
-    @DeleteMapping("/orders/{id}")
-    public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("id") long id) {
+    @DeleteMapping("/recipients/{id}")
+    public ResponseEntity<HttpStatus> deleteRecipient(@PathVariable("id") long id) {
         try {
-            Optional<Order> orderData = orderRepository.findById(id);
+            Optional<Recipient> orderData = recipientRepository.findById(id);
             if(orderData.isPresent()){
-                orderRepository.deleteById(id);
+                recipientRepository.deleteById(id);
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
