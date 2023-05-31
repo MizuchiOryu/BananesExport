@@ -7,6 +7,7 @@ import demo.bananeexport.exceptions.ApiCustomException;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
@@ -38,7 +39,6 @@ public class Order {
         setTemporyRecipient(id_recipient_tempory);
         setDelivery_date(delivery_date);
         setQuantity(quantity);
-        setPrice(1.2);
     }
 
     public long getId() {
@@ -77,6 +77,13 @@ public class Order {
         if(!matcher.matches()){
             throw new ApiCustomException("The property delivery_date does not respect this format : yyyy-MM-dd");
         }
+        LocalDate now = LocalDate.now();
+        LocalDate week = now.plus(1, ChronoUnit.WEEKS);
+        boolean isBefore = delivery_date.isBefore(week);
+
+        if(isBefore){
+            throw new ApiCustomException("The property delivery_date must be, at least, one week in the future compared to the current date.");
+        }
 
         this.delivery_date = delivery_date;
     }
@@ -89,7 +96,6 @@ public class Order {
         if(quantity == null){
             throw new ApiCustomException("quantity is a required field");
         }
-
         String patternString = "^[0-9]+$";
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(patternString);
         Matcher matcher = pattern.matcher(quantity.toString());
@@ -97,15 +103,19 @@ public class Order {
         if(!matcher.matches()){
             throw new ApiCustomException("The property quantity contain unique number");
         }
+
+        if(quantity % 25 != 0 && quantity <= 0 && quantity <= 100000){
+            throw new ApiCustomException("The property quantity must be between 0 and 10000 and must be a multiple of 25");
+        }
         this.quantity = quantity;
+        this.setPrice();
     }
 
     public Double getPrice() {
         return price;
     }
-
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPrice() {
+        this.price = 2.50 * (quantity %25);
     }
 
     public void setTemporyRecipient(Integer id_recipient) throws ApiCustomException{
