@@ -1,5 +1,6 @@
 package demo.bananeexport.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,19 +28,20 @@ public class Order {
     @Column(name = "price",nullable = false)
     private Double price;
 
-    @JsonIgnore
-    private Integer id_recipient_tempory = 0;
+    private Integer id_recipient_temporary;
 
     @ManyToOne
     @JoinColumn(name="recipient_id", nullable=false)
+    @JsonBackReference
     private Recipient recipient;
 
-    public Order() {}
-    public Order(LocalDate delivery_date, Integer quantity,Integer id_recipient_tempory) throws ApiCustomException{
-        setTemporyRecipient(id_recipient_tempory);
+    public Order(Integer id_recipient_temporary,LocalDate delivery_date, Integer quantity) throws ApiCustomException{
+        setId_recipient_temporary(id_recipient_temporary);
         setDelivery_date(delivery_date);
         setQuantity(quantity);
     }
+
+    public Order() {}
 
     public long getId() {
         return id;
@@ -104,7 +106,7 @@ public class Order {
             throw new ApiCustomException("The property quantity contain unique number");
         }
 
-        if(quantity % 25 != 0 && quantity <= 0 && quantity <= 100000){
+        if(quantity%25 != 0 || quantity <= 0 || quantity > 100000){
             throw new ApiCustomException("The property quantity must be between 0 and 10000 and must be a multiple of 25");
         }
         this.quantity = quantity;
@@ -115,17 +117,21 @@ public class Order {
         return price;
     }
     public void setPrice() {
-        this.price = 2.50 * (quantity %25);
+        Integer facteur = quantity %25;
+        if(facteur == 0){
+            facteur = 1;
+        }
+        this.price = 2.50 * facteur;
     }
 
-    public void setTemporyRecipient(Integer id_recipient) throws ApiCustomException{
-        if(Objects.isNull(id_recipient)){
+    public Integer getId_recipient_temporary() {
+        return id_recipient_temporary;
+    }
+
+    public void setId_recipient_temporary(Integer id_recipient_temporary)  throws ApiCustomException{
+        if(Objects.isNull(id_recipient_temporary)){
             throw new ApiCustomException("recipient contain unique number ");
         }
-        this.id_recipient_tempory = id_recipient;
-    }
-
-    public Integer getId_recipient_tempory() {
-        return id_recipient_tempory;
+        this.id_recipient_temporary = id_recipient_temporary;
     }
 }

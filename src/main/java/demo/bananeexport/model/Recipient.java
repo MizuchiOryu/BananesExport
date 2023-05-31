@@ -1,7 +1,9 @@
 package demo.bananeexport.model;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -51,10 +53,11 @@ public class Recipient {
     @Column(name = "country",nullable = false,length = 30)
     private String country;
 
-    @OneToMany(mappedBy = "recipient")
-    private Set<Order> orders;
+    @OneToMany(mappedBy = "recipient",fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Order> orders = new HashSet<>();
 
-    public Recipient() {}
+
     public Recipient(String name, String address, String postal_code, String city, String country) {
         this.name = name;
         this.address = address;
@@ -62,6 +65,7 @@ public class Recipient {
         this.city = city;
         this.country = country;
     }
+    public Recipient() {}
 
 
 
@@ -127,5 +131,9 @@ public class Recipient {
                 city.equals(rcp.city) &&
                 country.equals(rcp.country)
                 ;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
     }
 }

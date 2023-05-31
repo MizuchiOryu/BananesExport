@@ -1,5 +1,6 @@
 package demo.bananeexport.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import demo.bananeexport.exceptions.ApiCustomException;
 import demo.bananeexport.model.Order;
 import demo.bananeexport.model.Recipient;
@@ -62,7 +63,7 @@ class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) throws ApiCustomException{
-        Optional<Recipient> user = recipientRepository.findById(order.getId_recipient_tempory().longValue());
+        Optional<Recipient> user = recipientRepository.findById(order.getId_recipient_temporary().longValue());
         if(!user.isPresent()){
             throw  new ApiCustomException("User not exist");
         }
@@ -78,22 +79,19 @@ class OrderController {
         if(exists){
             throw  new ApiCustomException("Order exist");
         }
-        System.out.println(order);
-        Order _order = orderRepository.save(order);
-        return new ResponseEntity<>(_order, HttpStatus.CREATED);
+        return new ResponseEntity<>(orderRepository.save(order), HttpStatus.CREATED);
     }
 
     @PutMapping("/orders/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable("id") long id, @Valid @RequestBody Order order) throws ApiCustomException {
         Optional<Order> orderData = orderRepository.findById(id);
         if (orderData.isPresent()) {
-            Optional<Recipient> user = recipientRepository.findById(order.getId_recipient_tempory().longValue());
+            Optional<Recipient> user = recipientRepository.findById(order.getId_recipient_temporary().longValue());
             if(!user.isPresent()){
                 throw  new ApiCustomException("User not exist");
             }
-            order.setRecipient(user.get());
             Order _order = orderData.get();
-            _order.setRecipient(order.getRecipient());
+            _order.setRecipient(user.get());
             _order.setDelivery_date(order.getDelivery_date());
             _order.setQuantity(order.getQuantity());
             return new ResponseEntity<>(orderRepository.save(_order), HttpStatus.OK);
