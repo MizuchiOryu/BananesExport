@@ -2,6 +2,8 @@ package demo.bananeexport.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.util.Set;
+
 @Entity
 public class Recipient {
     @Id
@@ -48,6 +50,11 @@ public class Recipient {
     )
     @Column(name = "country",nullable = false,length = 30)
     private String country;
+
+    @OneToMany(mappedBy = "recipient")
+    private Set<Order> orders;
+
+    public Recipient() {}
     public Recipient(String name, String address, String postal_code, String city, String country) {
         this.name = name;
         this.address = address;
@@ -55,6 +62,8 @@ public class Recipient {
         this.city = city;
         this.country = country;
     }
+
+
 
     public String getName() {
         return name;
@@ -111,12 +120,12 @@ public class Recipient {
             return true;
         if (!(o instanceof Recipient))
             return false;
-        Recipient employee = (Recipient) o;
-        return name.equals(employee.name) &&
-                address.equals(employee.address) &&
-                postal_code.equals(employee.postal_code) &&
-                city.equals(employee.city) &&
-                country.equals(employee.country)
+        Recipient rcp = (Recipient) o;
+        return name.equals(rcp.name) &&
+                address.equals(rcp.address) &&
+                postal_code.equals(rcp.postal_code) &&
+                city.equals(rcp.city) &&
+                country.equals(rcp.country)
                 ;
     }
 }
