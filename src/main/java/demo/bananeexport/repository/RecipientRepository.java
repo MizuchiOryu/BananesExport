@@ -1,6 +1,9 @@
 package demo.bananeexport.repository;
 
 import demo.bananeexport.model.Recipient;
-import org.springframework.data.jpa.repository.JpaRepository;
-public interface RecipientRepository extends JpaRepository<Recipient,Long>{
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface RecipientRepository extends MongoRepository<Recipient, String> {
 }

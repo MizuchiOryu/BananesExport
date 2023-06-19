@@ -51,7 +51,7 @@ class RecipientController {
     }
 
     @GetMapping("/recipients/{id}")
-    public ResponseEntity<Recipient> getRecipientById(@PathVariable("id") long id) {
+    public ResponseEntity<Recipient> getRecipientById(@PathVariable("id") String id) {
         Optional<Recipient> orderData = recipientRepository.findById(id);
         if (orderData.isPresent()) {
             return new ResponseEntity<>(orderData.get(), HttpStatus.OK);
@@ -81,7 +81,7 @@ class RecipientController {
     }
 
     @PutMapping("/recipients/{id}")
-    public ResponseEntity<Recipient> updateRecipient(@PathVariable("id") long id, @Valid @RequestBody Recipient recipient) {
+    public ResponseEntity<Recipient> updateRecipient(@PathVariable("id") String id, @Valid @RequestBody Recipient recipient) {
         Optional<Recipient> orderData = recipientRepository.findById(id);
         if (orderData.isPresent()) {
 
@@ -103,7 +103,7 @@ class RecipientController {
      */
 
     @DeleteMapping("/recipients/{id}")
-    public ResponseEntity<HttpStatus> deleteRecipient(@PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> deleteRecipient(@PathVariable("id") String id) {
         try {
             Optional<Recipient> orderData = recipientRepository.findById(id);
             if(orderData.isPresent()){
