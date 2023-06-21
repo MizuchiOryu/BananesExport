@@ -3,6 +3,8 @@ services:
   sb-app:
     build: .
     container_name: "docker-app"
+    environment:
+        - SPRING_DATA_MONGODB_PORT=mongodb://mongodb/docker-db
     ports:
       - 5000:5000
   mongodb:
